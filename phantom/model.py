@@ -25,6 +25,9 @@ class Page(BaseModel):
         pattern = r"(.+)\.(png|svg|jpeg|pdf|csv|xlsx)"
         return True if re.match(pattern, self.url) else False
 
+    def __str__(self):
+        return f"Page(url={self.url})"
+
 
 class Link(BaseModel):
     """this class models a link between 2 pages."""
@@ -32,6 +35,9 @@ class Link(BaseModel):
     source: Page
     destination: Page
     weight: float
+
+    def __str__(self):
+        return f"Link(source={self.source}, destination={self.destination}, weight={self.weight})"
 
 
 class Network(BaseModel):
@@ -42,6 +48,16 @@ class Network(BaseModel):
     def add_link(self, link: Link):
         """Adds a link to Network Elements."""
         self.elements.append(link)
+
+    def __str__(self):
+        SHOW = 10
+        return (
+            "Network(elements=["
+            + "\n".join([f"{element}" for element in self.elements[:SHOW]])
+            + "\n"
+            + (f"...{len(self.elements)-SHOW} more" if len(self.elements) > 10 else "")
+            + "])"
+        )
 
 
 class WeightUtil:

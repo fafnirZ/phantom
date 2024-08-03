@@ -19,7 +19,7 @@ class Crawl:
         self.start = start
         self.queue.append(self.start)
 
-    def run(self, timeout: float = 1, max_depth=10):
+    def run(self, timeout: float = 1, max_depth=2):
         """Starts the crawling process."""
         curr_depth = 0
         while len(self.queue) > 0 and curr_depth < max_depth:
