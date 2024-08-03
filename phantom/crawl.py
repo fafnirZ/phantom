@@ -1,9 +1,9 @@
 """the main function."""
 
-from phantom.model import Page, Network, Link
-from phantom.scrape import parse_contents
+from requests import RequestException
+from phantom.model import Page, Network, Link, WeightUtil
+from phantom.scrape import parse_contents, href_is_relative
 import time
-from rapidfuzz import fuzz, process
 
 
 class Crawl:
@@ -17,14 +17,15 @@ class Crawl:
     def __init__(self, start: Page):
         """Init function."""
         self.start = start
-
         self.queue.append(self.start)
 
-    def run(self, timeout: float = 1, max_depth=1):
+    def run(self, timeout: float = 1, max_depth=10):
         """Starts the crawling process."""
         curr_depth = 0
         while len(self.queue) > 0 and curr_depth < max_depth:
             _curr: Page = self.queue.pop(0)
+            curr_depth += 1
+
             if _curr in self.visited:
                 continue
 
@@ -34,26 +35,34 @@ class Crawl:
             self.visited.append(_curr)
             page_domain = _curr.get_domain()
 
-            soup = parse_contents(_curr.url)
+            try:
+                soup = parse_contents(_curr.url)
+            except RequestException:
+                continue
 
             for link in soup.find_all("a", href=True):
                 # if internal link "process it accordingly"
-                # print(link)
-
                 url = link.get("href")
-                print(url)
+
+                # resolve internal link to an absolutepath
+                if href_is_relative(url):
+                    _url = url
+                    url = f"{page_domain}{_url}"
+
                 new_page = Page(url=url)
 
-                # TODO resolve internal link to an absolutepath
-
                 # calculate similarity
-                strength = 0
+                strength = WeightUtil.weight_via_url_distance(
+                    self.start.url, new_page.url
+                )
                 self.network.add_link(
                     Link(source=_curr, destination=new_page, weight=strength)
                 )
-                self.queue.add(new_page)
+                self.queue.append(new_page)
 
             time.sleep(timeout)
+
+        print(self.network)
 
 
 if __name__ == "__main__":
