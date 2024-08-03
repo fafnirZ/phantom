@@ -8,6 +8,10 @@ setup(
     install_requires=[
         # List your package dependencies here
         # Example: 'requests>=2.24.0',
+        "pyvis",
+        "requests",
+        "pydantic",
+        "rapidfuzz",
     ],
     extras_require={
         "dev": [

@@ -1,7 +1,7 @@
 """the main function."""
 
 from requests import RequestException
-from phantom.model import Page, Network, Link, WeightUtil
+from phantom.model import Page, Network, Link, Visualizer, WeightUtil
 from phantom.scrape import parse_contents, href_is_relative
 import time
 
@@ -62,7 +62,7 @@ class Crawl:
 
             time.sleep(timeout)
 
-        print(self.network)
+        Visualizer(self.network)
 
 
 if __name__ == "__main__":
