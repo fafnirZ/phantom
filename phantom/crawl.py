@@ -62,7 +62,7 @@ class Crawl:
 
             time.sleep(timeout)
 
-        Visualizer(self.network)
+        Visualizer(network=self.network, output="a.html")
 
 
 if __name__ == "__main__":

@@ -5,7 +5,7 @@ from pydantic import BaseModel
 import re
 from rapidfuzz import fuzz
 
-# from pyvis import Network as nw
+from pyvis.network import Network as nw
 import itertools
 
 
@@ -76,15 +76,18 @@ class WeightUtil:
 
 
 class Visualizer:
-    def __init__(self, network: Network):
-        # self.viz_network = nw(
-        #     bgcolor="#222222", height="750px", font_color="white", width="100%"
-        # )
+    def __init__(self, network: Network, output: str):
+        self.viz_network = nw(
+            bgcolor="#222222", height="750px", font_color="white", width="100%"
+        )
 
         # for all unique links in network
         links = [elem.as_list() for elem in network.elements]
 
         # list of unique Pages
         nodes = set(list(itertools.chain(*links)))
+        nodes_str = [str(x) for x in nodes]
 
-        print(nodes)
+        self.viz_network.add_nodes(nodes_str)
+
+        self.viz_network.write_html(output)
