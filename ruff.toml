@@ -1,17 +1,13 @@
-[project]
-requires-python = ">=3.10"
-
-
-[tool.ruff]
+[ruff]
 indent-width = 4
 line-length = 120
 
-[tool.ruff.lint]
+[ruff.lint]
 extend-select = [
   "UP",  # pyupgrade
   "D",   # pydocstyle
 ]
 
 
-[tool.ruff.lint.pydocstyle]
+[ruff.lint.pydocstyle]
 convention = "google"

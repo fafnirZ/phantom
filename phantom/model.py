@@ -19,9 +19,14 @@ class Link(BaseModel):
 
     source: Page
     destination: Page
+    weight: int
 
 
 class Network(BaseModel):
     """this class contains all links."""
 
-    elements: list[Link]
+    elements: list[Link] = list()
+
+    def add_link(self, link: Link):
+        """Adds a link to Network Elements."""
+        self.elements.append(link)
