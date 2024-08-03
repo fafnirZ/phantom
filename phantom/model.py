@@ -19,7 +19,7 @@ class Page(BaseModel):
         pattern = r"https?://([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})"
         return re.search(pattern, self.url).group(0)
 
-    def is_page_an_asset(self) -> bool:
+    def is_asset(self) -> bool:
         """returns if the current page is an asset rather than a html website"""
         pattern = r"(.+)\.(png|svg|jpeg|pdf|csv|xlsx)"
         return True if re.match(pattern, self.url) else False
@@ -31,6 +31,11 @@ class Link(BaseModel):
     source: Page
     destination: Page
     weight: int
+
+    def __init__(self, source, destination, weight):
+        self.source = source
+        self.destination = destination
+        self.weight = weight
 
 
 class Network(BaseModel):
