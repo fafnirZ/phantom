@@ -12,6 +12,7 @@ setup(
         "requests",
         "pydantic",
         "rapidfuzz",
+        "tqdm",
     ],
     extras_require={
         "dev": [

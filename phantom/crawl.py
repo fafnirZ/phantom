@@ -3,6 +3,7 @@
 from requests import RequestException
 from phantom.model import Page, Network, Link, Visualizer, WeightUtil
 from phantom.scrape import parse_contents, href_is_relative
+from tqdm import tqdm
 import time
 
 
@@ -19,10 +20,12 @@ class Crawl:
         self.start = start
         self.queue.append(self.start)
 
-    def run(self, timeout: float = 1, max_depth=2):
+    def run(self, timeout: float = 2, max_depth=1):
         """Starts the crawling process."""
         curr_depth = 0
+        pbar = tqdm(total=max_depth)
         while len(self.queue) > 0 and curr_depth < max_depth:
+            pbar.update(1)
             _curr: Page = self.queue.pop(0)
             curr_depth += 1
 
@@ -37,7 +40,8 @@ class Crawl:
 
             try:
                 soup = parse_contents(_curr.url)
-            except RequestException:
+            except RequestException as err:
+                print(err)
                 continue
 
             for link in soup.find_all("a", href=True):
@@ -62,6 +66,7 @@ class Crawl:
 
             time.sleep(timeout)
 
+        pbar.close()
         Visualizer(network=self.network, output="a.html")
 
 

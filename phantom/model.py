@@ -45,8 +45,17 @@ class Link(BaseModel):
     def __str__(self):
         return f"Link(source={self.source}, destination={self.destination}, weight={self.weight})"
 
-    def as_list(self) -> list[Page, Page]:
+    def as_list(
+        self, include_weight: bool = False
+    ) -> list[Page, Page] | list[Page, Page, float]:
+        if include_weight:
+            return [self.source, self.destination, self.weight]
         return [self.source, self.destination]
+
+    def as_tuple(
+        self, include_weight: bool = False
+    ) -> tuple[Page, Page] | tuple[Page, Page, float]:
+        return tuple(self.as_list(include_weight=include_weight))
 
 
 class Network(BaseModel):
@@ -80,6 +89,10 @@ class Visualizer:
         self.viz_network = nw(
             bgcolor="#222222", height="750px", font_color="white", width="100%"
         )
+        # NOTE: network keeps spazzing out
+        # https://stackoverflow.com/questions/68117561/pyvis-network-keeps-on-moving
+        self.viz_network.repulsion()
+        self.viz_network.show_buttons(filter_=["physics"])
 
         # for all unique links in network
         links = [elem.as_list() for elem in network.elements]
@@ -88,6 +101,15 @@ class Visualizer:
         nodes = set(list(itertools.chain(*links)))
         nodes_str = [str(x) for x in nodes]
 
+        # adding to visualisation
         self.viz_network.add_nodes(nodes_str)
+
+        # for link tuples
+        link_tuples = [link.as_tuple(include_weight=True) for link in network.elements]
+        link_tuples_string = list(
+            map(lambda tpl: (str(tpl[0]), str(tpl[1])), link_tuples)
+        )
+
+        self.viz_network.add_edges(link_tuples_string)
 
         self.viz_network.write_html(output)
